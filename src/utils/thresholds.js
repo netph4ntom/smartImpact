@@ -1,0 +1,160 @@
+/**
+ * thresholds.js
+ * Parameter metadata & threshold evaluation rules.
+ *
+ * Rules from AGENT.md:
+ * - Ambang batas harus dapat dikonfigurasi.
+ * - Jangan menetapkan status normal universal; jika threshold belum ditentukan,
+ *   tampilkan "Batas belum diatur" atau "Status belum dapat dinilai".
+ * - Jangan mengklaim air aman diminum hanya dari 4 parameter ini.
+ * - Dilarang mengasumsikan nilai invalid sebagai normal.
+ */
+
+export const SENSOR_METADATA = {
+  temperature: {
+    id: 'temperature',
+    name: 'Suhu Air',
+    unit: '°C',
+    decimals: 1,
+    description: 'Suhu fisik perairan',
+    iconType: 'thermometer',
+  },
+  ph: {
+    id: 'ph',
+    name: 'pH',
+    unit: '',
+    decimals: 1,
+    description: 'Derajat keasaman/kebasaan air',
+    iconType: 'activity',
+  },
+  turbidity: {
+    id: 'turbidity',
+    name: 'Turbidity',
+    unit: 'NTU',
+    decimals: 1,
+    description: 'Tingkat kekeruhan air',
+    iconType: 'waves',
+  },
+  tds: {
+    id: 'tds',
+    name: 'TDS',
+    unit: 'ppm',
+    decimals: 0,
+    description: 'Total padatan terlarut (Total Dissolved Solids)',
+    iconType: 'droplets',
+  },
+}
+
+/**
+ * Default sample thresholds for water quality monitoring.
+ * Set to null if thresholds are not yet configured.
+ */
+export const DEFAULT_THRESHOLDS = {
+  temperature: {
+    min: 20,
+    max: 30,
+    warnMin: 18,
+    warnMax: 32,
+    reference: 'Baku mutu air sungai/danau kelas 2',
+  },
+  ph: {
+    min: 6.5,
+    max: 8.5,
+    warnMin: 6.0,
+    warnMax: 9.0,
+    reference: 'Baku mutu lingkungan hidup',
+  },
+  turbidity: {
+    min: 0,
+    max: 5.0,
+    warnMin: 0,
+    warnMax: 10.0,
+    reference: 'Standar kejernihan air bersih',
+  },
+  tds: {
+    min: 0,
+    max: 300,
+    warnMin: 0,
+    warnMax: 500,
+    reference: 'Indikator kandungan mineral terlarut',
+  },
+}
+
+/**
+ * Evaluate sensor reading status against configured thresholds.
+ *
+ * @param {number | null | undefined} rawValue
+ * @param {string} paramKey - 'temperature' | 'ph' | 'turbidity' | 'tds'
+ * @param {object | null} [customThreshold] - Optional override threshold
+ * @returns {{
+ *   status: 'normal' | 'warning' | 'danger' | 'unknown',
+ *   label: string,
+ *   valid: boolean,
+ *   reason?: string
+ * }}
+ */
+export function evaluateSensorStatus(rawValue, paramKey, customThreshold = undefined) {
+  // 1. Check for missing data
+  if (rawValue === null || rawValue === undefined) {
+    return {
+      status: 'unknown',
+      label: 'Belum ada data',
+      valid: false,
+      reason: 'Sensor belum mengirim pembacaan.',
+    }
+  }
+
+  const num = Number(rawValue)
+
+  // 2. Check for non-numeric or infinite readings
+  if (!Number.isFinite(num)) {
+    return {
+      status: 'danger',
+      label: 'Nilai Tidak Valid',
+      valid: false,
+      reason: 'Pembacaan sensor di luar jangkauan fisik atau sensor error.',
+    }
+  }
+
+  // 3. Resolve threshold (can be null if not configured)
+  const threshold = customThreshold !== undefined ? customThreshold : DEFAULT_THRESHOLDS[paramKey]
+
+  if (!threshold) {
+    return {
+      status: 'unknown',
+      label: 'Batas belum diatur',
+      valid: true,
+      reason: 'Threshold untuk parameter ini belum dikonfigurasi.',
+    }
+  }
+
+  const { min, max, warnMin, warnMax } = threshold
+
+  // 4. Critical out of bounds
+  if ((typeof warnMin === 'number' && num < warnMin) || (typeof warnMax === 'number' && num > warnMax)) {
+    return {
+      status: 'danger',
+      label: 'Kritis',
+      valid: true,
+      reason: num > warnMax ? 'Melampaui batas atas maksimal' : 'Di bawah batas bawah minimal',
+    }
+  }
+
+  // 5. Warning range
+  if ((typeof min === 'number' && num < min) || (typeof max === 'number' && num > max)) {
+    return {
+      status: 'warning',
+      label: 'Perhatian',
+      valid: true,
+      reason: num > max ? 'Mendekati batas atas' : 'Mendekati batas bawah',
+    }
+  }
+
+  // 6. Normal
+  return {
+    status: 'normal',
+    label: 'Normal',
+    valid: true,
+    reason: 'Parameter berada dalam rentang toleransi standar.',
+  }
+}

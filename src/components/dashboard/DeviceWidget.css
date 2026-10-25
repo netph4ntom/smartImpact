@@ -1,0 +1,129 @@
+.device-widget {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-card);
+}
+
+.device-widget__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.device-widget__heading {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  color: var(--color-brand-900);
+}
+
+.device-widget__body {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-2) 0;
+}
+
+.device-widget__chip-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-card);
+  background: linear-gradient(135deg, var(--color-brand-900), var(--color-brand-700));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(18, 59, 69, 0.2);
+}
+
+.device-widget__chip-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--color-brand-100);
+}
+
+.device-widget__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.device-widget__name {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-brand-900);
+}
+
+.device-widget__id {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.device-widget__time {
+  font-size: 0.75rem;
+  color: var(--color-text-subtle);
+  margin-top: 2px;
+}
+
+/* Location Card */
+.device-widget__location-card {
+  background-color: var(--color-surface-sunken);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: var(--radius-control);
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.device-widget__loc-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-brand-700);
+}
+
+.device-widget__loc-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.device-widget__loc-name {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-brand-900);
+  margin: 0;
+}
+
+/* Footer Link */
+.device-widget__footer {
+  border-top: 1px solid var(--color-border-subtle);
+  padding-top: var(--space-3);
+}
+
+.device-widget__settings-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--color-brand-700);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+.device-widget__settings-link:hover {
+  color: var(--color-brand-800);
+}
+
+.device-widget__link-icon {
+  width: 14px;
+  height: 14px;
+}

@@ -1,0 +1,84 @@
+.dashboard-page {
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboard-header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+
+/* Mobile (< 540px): 1 column so sensor names and values never truncate */
+.dashboard-cards-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-6);
+}
+
+/* Tablet & wide mobile: 2 columns from 540px */
+@media (min-width: 540px) {
+  .dashboard-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Desktop: 4 columns in one row from 1200px (allows adequate width alongside 260px sidebar) */
+@media (min-width: 1200px) {
+  .dashboard-cards-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Bottom Grid: Chart & Device Widget */
+.dashboard-bottom-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 1024px) {
+  .dashboard-bottom-grid {
+    grid-template-columns: 2fr 1fr;
+    align-items: start;
+  }
+}
+
+.dashboard-chart-col {
+  min-width: 0;
+}
+
+.dashboard-device-col {
+  min-width: 0;
+}
+
+/* Empty / Error views */
+.dashboard-loading-view,
+.dashboard-error-view,
+.dashboard-empty-view {
+  padding: var(--space-8) 0;
+}
+
+.empty-reload-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--color-brand-700);
+  color: var(--color-text-inverse);
+  border-radius: var(--radius-control);
+  font-weight: 500;
+  font-size: 0.875rem;
+}
+
+.empty-reload-btn:hover {
+  background-color: var(--color-brand-800);
+}
+
+.empty-reload-icon {
+  width: 16px;
+  height: 16px;
+}

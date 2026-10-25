@@ -1,0 +1,114 @@
+.stats-summary-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+@media (min-width: 900px) {
+  .stats-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-4);
+  }
+}
+
+.stat-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-card);
+  min-width: 0;
+}
+
+.stat-card__icon-wrap {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-pill);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-card__icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Card Themes */
+.stat-card--avg .stat-card__icon-wrap {
+  background-color: var(--color-brand-100);
+}
+.stat-card--avg .stat-card__icon {
+  color: var(--color-brand-700);
+}
+
+.stat-card--min .stat-card__icon-wrap {
+  background-color: #E0F2FE;
+}
+.stat-card--min .stat-card__icon {
+  color: #0284C7;
+}
+
+.stat-card--max .stat-card__icon-wrap {
+  background-color: #FEF3C7;
+}
+.stat-card--max .stat-card__icon {
+  color: #B45309;
+}
+
+.stat-card--count .stat-card__icon-wrap {
+  background-color: #EDE9FE;
+}
+.stat-card--count .stat-card__icon {
+  color: #6D28D9;
+}
+
+.stat-card__content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.stat-card__label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+}
+
+.stat-card__value {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-brand-900);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Invalid Notice */
+.stats-invalid-alert {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background-color: #FEF3C7;
+  border: 1px solid #FDE68A;
+  border-radius: var(--radius-control);
+  font-size: 0.75rem;
+  color: #92400E;
+}
+
+.stats-invalid-alert__icon {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}

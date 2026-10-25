@@ -1,0 +1,56 @@
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+  background-color: var(--color-page);
+  overflow-x: hidden;
+}
+
+.app-shell__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  /* Critical: prevents grid/flex children from overflowing */
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+@media (min-width: 768px) {
+  .app-shell__body {
+    margin-left: var(--sidebar-width);
+    width: calc(100% - var(--sidebar-width));
+    transition: margin-left var(--transition-normal), width var(--transition-normal);
+  }
+
+  .app-shell--sidebar-collapsed .app-shell__body {
+    margin-left: var(--sidebar-collapsed-width);
+    width: calc(100% - var(--sidebar-collapsed-width));
+  }
+}
+
+.app-shell__content {
+  flex: 1;
+  padding: var(--space-4);
+  /* Top padding accommodates fixed header bar */
+  padding-top: calc(var(--header-height) + var(--space-4));
+  /* Safe padding bottom for mobile so bottom nav never covers content */
+  padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px) + var(--space-6));
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .app-shell__content {
+    padding: var(--space-6) var(--space-8);
+    padding-top: calc(var(--header-height) + var(--space-6));
+    /* On desktop, no bottom nav, standard padding */
+    padding-bottom: var(--space-10);
+  }
+}
+
+.app-shell__container {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+}

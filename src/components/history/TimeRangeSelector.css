@@ -1,0 +1,53 @@
+.time-range-selector {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  padding: 4px 6px;
+  box-shadow: var(--shadow-xs);
+}
+
+.time-range-selector__icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+}
+
+.time-range-selector__icon {
+  width: 16px;
+  height: 16px;
+  color: var(--color-brand-700);
+}
+
+.time-range-selector__pill-group {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.time-range-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 5px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-brand-900);
+  background-color: transparent;
+  transition: all var(--transition-fast);
+}
+
+.time-range-pill:hover {
+  background-color: var(--color-surface-hover);
+}
+
+.time-range-pill--active {
+  background-color: var(--color-brand-700);
+  color: var(--color-text-inverse);
+  font-weight: 600;
+}
