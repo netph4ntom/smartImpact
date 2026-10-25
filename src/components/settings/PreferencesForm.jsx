@@ -16,10 +16,10 @@ export default function PreferencesForm() {
   }
 
   const intervalOptions = [
-    { value: 10, label: '10 Detik (Uji Cepat)' },
+    { value: 10, label: '10 Detik' },
     { value: 30, label: '30 Detik' },
     { value: 60, label: '1 Menit' },
-    { value: 300, label: '5 Menit (Standar)' },
+    { value: 300, label: '5 Menit' },
   ]
 
   return (
@@ -83,7 +83,7 @@ export default function PreferencesForm() {
             </div>
           </div>
           <div className="pref-item__right">
-            <span className="pref-badge">Light (Aktif)</span>
+            <span className="pref-badge">Light</span>
           </div>
         </div>
 

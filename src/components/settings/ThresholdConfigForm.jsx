@@ -295,7 +295,7 @@ export default function ThresholdConfigForm() {
             type="submit"
             className="threshold-save-btn touch-target"
           >
-            Simpan Konfigurasi (Lokal)
+            Simpan Konfigurasi
           </button>
           <button
             type="button"

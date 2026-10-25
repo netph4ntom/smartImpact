@@ -313,7 +313,7 @@ export default function HeaderBar({
               {/* Dropdown Header */}
               <div className="notif-dropdown__header">
                 <div className="notif-dropdown__header-title-wrap">
-                  <h3 className="notif-dropdown__title">Peringatan Kualitas Air</h3>
+                  <h3 className="notif-dropdown__title">Notifikasi</h3>
                   <span
                     className={`notif-dropdown__badge ${
                       hasDanger
@@ -336,10 +336,10 @@ export default function HeaderBar({
                       type="button"
                       className="notif-clear-all-btn"
                       onClick={handleClearAll}
-                      title="Bersihkan semua notifikasi aktif"
+                      title="Bersihkan semua notifikasi"
+                      aria-label="Bersihkan semua notifikasi"
                     >
                       <Trash2 className="notif-clear-all-icon" aria-hidden="true" />
-                      <span>Bersihkan</span>
                     </button>
                   )}
                   <button
