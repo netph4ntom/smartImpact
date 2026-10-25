@@ -74,8 +74,28 @@
 
 .overview-chart-container {
   width: 100%;
-  height: 300px;
-  min-height: 300px;
+  height: 290px;
+  min-height: 240px;
+}
+
+@media (max-width: 640px) {
+  .overview-chart-card {
+    padding: var(--space-4) var(--space-3);
+    gap: var(--space-3);
+  }
+
+  .overview-chart-container {
+    height: 250px;
+    min-height: 220px;
+  }
+
+  .overview-chart-card__title {
+    font-size: 0.9375rem;
+  }
+
+  .overview-chart-card__sub {
+    font-size: 0.75rem;
+  }
 }
 
 /* Custom Tooltip */

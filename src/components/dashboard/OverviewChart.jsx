@@ -28,7 +28,7 @@ function CustomChartTooltip({ active, payload, label }) {
               />
               <span className="chart-tooltip__name">{entry.name}:</span>
               <strong className="chart-tooltip__val">
-                {entry.value}{' '}
+                {entry.value !== null && entry.value !== undefined ? entry.value : '--'}{' '}
                 {entry.name.includes('Suhu')
                   ? '°C'
                   : entry.name.includes('Turbidity')
@@ -48,8 +48,9 @@ function CustomChartTooltip({ active, payload, label }) {
 
 /**
  * OverviewChart Component
- * Renders 24h summary chart when history is available.
- * Complies with rule: "Grafik ringkas hanya jika histori tersedia."
+ * Renders real-time rolling summary chart with sliding window (FIFO).
+ * Complies with user requirement:
+ * "Trafiknya di mobile ui tidak menumpuk, tetap jalan, dan sumbu waktu rapi."
  *
  * @param {Array<object>} history - Historical timeline array
  */
@@ -76,6 +77,9 @@ export default function OverviewChart({ history = [] }) {
     )
   }
 
+  // Sliding window: display latest 15 points to keep mobile chart uncluttered & flowing
+  const displayHistory = history.length > 15 ? history.slice(-15) : history
+
   return (
     <div className="overview-chart-card card" aria-labelledby="chart-title">
       <div className="overview-chart-card__header">
@@ -90,7 +94,7 @@ export default function OverviewChart({ history = [] }) {
             </span>
           </div>
           <span className="overview-chart-card__sub">
-            Pencatatan tren real-time ({history.length} titik data)
+            Pencatatan tren real-time ({displayHistory.length} titik data)
           </span>
         </div>
       </div>
@@ -98,35 +102,40 @@ export default function OverviewChart({ history = [] }) {
       <div className="overview-chart-container">
         <ResponsiveContainer
           width="100%"
-          height={300}
+          height="100%"
           minWidth={0}
-          minHeight={300}
-          initialDimension={{ width: 600, height: 300 }}
+          minHeight={240}
         >
           <LineChart
-            data={history}
-            margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+            data={displayHistory}
+            margin={{ top: 10, right: 10, left: -12, bottom: 0 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-subtle)" vertical={false} />
             <XAxis
               dataKey="time"
               stroke="var(--color-text-subtle)"
-              fontSize={12}
+              fontSize={11}
               tickLine={false}
               axisLine={{ stroke: 'var(--color-border)' }}
+              interval="preserveStartEnd"
+              minTickGap={28}
+              tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }}
             />
             <YAxis
               stroke="var(--color-text-subtle)"
-              fontSize={12}
+              fontSize={11}
               tickLine={false}
               axisLine={{ stroke: 'var(--color-border)' }}
+              width={32}
+              tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }}
             />
             <Tooltip content={<CustomChartTooltip />} />
             <Legend
               verticalAlign="top"
               align="right"
               iconType="circle"
-              wrapperStyle={{ paddingBottom: '16px', fontSize: '12px' }}
+              iconSize={8}
+              wrapperStyle={{ paddingBottom: '12px', fontSize: '11px' }}
             />
 
             {/* Suhu Air */}
@@ -135,9 +144,9 @@ export default function OverviewChart({ history = [] }) {
               dataKey="temperature"
               name="Suhu (°C)"
               stroke="#0284C7"
-              strokeWidth={2.5}
-              dot={{ r: 3, fill: '#0284C7' }}
-              activeDot={{ r: 5 }}
+              strokeWidth={2}
+              dot={false}
+              activeDot={{ r: 5, strokeWidth: 2, stroke: '#FFFFFF' }}
               isAnimationActive={false}
             />
 
@@ -147,9 +156,9 @@ export default function OverviewChart({ history = [] }) {
               dataKey="ph"
               name="pH"
               stroke="#0F766E"
-              strokeWidth={2.5}
-              dot={{ r: 3, fill: '#0F766E' }}
-              activeDot={{ r: 5 }}
+              strokeWidth={2}
+              dot={false}
+              activeDot={{ r: 5, strokeWidth: 2, stroke: '#FFFFFF' }}
               isAnimationActive={false}
             />
 
@@ -159,9 +168,9 @@ export default function OverviewChart({ history = [] }) {
               dataKey="turbidity"
               name="Turbidity (NTU)"
               stroke="#F59E0B"
-              strokeWidth={2.5}
-              dot={{ r: 3, fill: '#F59E0B' }}
-              activeDot={{ r: 5 }}
+              strokeWidth={2}
+              dot={false}
+              activeDot={{ r: 5, strokeWidth: 2, stroke: '#FFFFFF' }}
               isAnimationActive={false}
             />
 
@@ -171,9 +180,9 @@ export default function OverviewChart({ history = [] }) {
               dataKey="tds"
               name="Salinitas (ppt)"
               stroke="#8B5CF6"
-              strokeWidth={2.5}
-              dot={{ r: 3, fill: '#8B5CF6' }}
-              activeDot={{ r: 5 }}
+              strokeWidth={2}
+              dot={false}
+              activeDot={{ r: 5, strokeWidth: 2, stroke: '#FFFFFF' }}
               isAnimationActive={false}
             />
           </LineChart>
