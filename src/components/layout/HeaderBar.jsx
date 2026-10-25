@@ -6,8 +6,11 @@ import {
   AlertOctagon,
   AlertTriangle,
   CheckCircle2,
+  CheckCheck,
   X,
   SlidersHorizontal,
+  Trash2,
+  RotateCcw,
 } from 'lucide-react'
 import { loadPreferences } from '../../services/settingsService.js'
 import './HeaderBar.css'
@@ -26,8 +29,36 @@ export default function HeaderBar({
   const dropdownRef = useRef(null)
   const prevDangerCountRef = useRef(0)
 
-  // 1. Compute Active Alerts based on Critical Thresholds, Warnings, and Device Health
-  const activeAlerts = useMemo(() => {
+  // Track user-dismissed alert IDs in current session
+  const [dismissedAlertIds, setDismissedAlertIds] = useState(() => {
+    if (typeof window !== 'undefined' && window.sessionStorage) {
+      try {
+        const stored = sessionStorage.getItem('smartimpact_dismissed_alerts')
+        if (stored) {
+          const parsed = JSON.parse(stored)
+          if (Array.isArray(parsed)) return new Set(parsed)
+        }
+      } catch {
+        // Fallback to empty Set
+      }
+    }
+    return new Set()
+  })
+
+  // Synchronize dismissed alert IDs to sessionStorage
+  const updateDismissedAlerts = (newSet) => {
+    setDismissedAlertIds(newSet)
+    if (typeof window !== 'undefined' && window.sessionStorage) {
+      try {
+        sessionStorage.setItem('smartimpact_dismissed_alerts', JSON.stringify([...newSet]))
+      } catch {
+        // Ignore quota errors
+      }
+    }
+  }
+
+  // 1. Compute Raw Alerts based on Critical Thresholds, Warnings, and Device Health
+  const rawAlerts = useMemo(() => {
     const list = []
 
     // A. Critical & Warning Sensor Threshold Alerts
@@ -93,10 +124,33 @@ export default function HeaderBar({
     return list
   }, [sensors, hasPartialFailure, failedSensors, connectionStatus, deviceName])
 
+  // Active alerts excluding those dismissed by the user
+  const activeAlerts = useMemo(() => {
+    return rawAlerts.filter((alert) => !dismissedAlertIds.has(alert.id))
+  }, [rawAlerts, dismissedAlertIds])
+
+  const dismissedCount = rawAlerts.filter((alert) => dismissedAlertIds.has(alert.id)).length
   const dangerAlerts = activeAlerts.filter((a) => a.type === 'danger')
   const warningAlerts = activeAlerts.filter((a) => a.type === 'warning')
   const totalAlertsCount = activeAlerts.length
   const hasDanger = dangerAlerts.length > 0
+
+  // Notification clearance actions
+  const handleClearAll = () => {
+    const allIds = new Set(rawAlerts.map((a) => a.id))
+    updateDismissedAlerts(allIds)
+  }
+
+  const handleDismissAlert = (id, e) => {
+    e?.stopPropagation?.()
+    const next = new Set(dismissedAlertIds)
+    next.add(id)
+    updateDismissedAlerts(next)
+  }
+
+  const handleRestoreAlerts = () => {
+    updateDismissedAlerts(new Set())
+  }
 
   // 2. Play subtle Web Audio API chime when critical alert emerges (if soundAlerts enabled)
   useEffect(() => {
@@ -276,28 +330,62 @@ export default function HeaderBar({
                         : 'Normal'}
                   </span>
                 </div>
-                <button
-                  type="button"
-                  className="notif-dropdown__close-btn"
-                  onClick={() => setIsDropdownOpen(false)}
-                  aria-label="Tutup panel notifikasi"
-                >
-                  <X className="notif-close-icon" aria-hidden="true" />
-                </button>
+                <div className="notif-dropdown__header-actions">
+                  {totalAlertsCount > 0 && (
+                    <button
+                      type="button"
+                      className="notif-clear-all-btn"
+                      onClick={handleClearAll}
+                      title="Bersihkan semua notifikasi aktif"
+                    >
+                      <Trash2 className="notif-clear-all-icon" aria-hidden="true" />
+                      <span>Bersihkan</span>
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="notif-dropdown__close-btn"
+                    onClick={() => setIsDropdownOpen(false)}
+                    aria-label="Tutup panel notifikasi"
+                  >
+                    <X className="notif-close-icon" aria-hidden="true" />
+                  </button>
+                </div>
               </div>
 
               {/* Dropdown Body: Empty State or Alerts List */}
               <div className="notif-dropdown__body">
                 {totalAlertsCount === 0 ? (
-                  <div className="notif-empty-state">
-                    <div className="notif-empty-icon-wrap">
-                      <CheckCircle2 className="notif-empty-icon" aria-hidden="true" />
+                  dismissedCount > 0 && rawAlerts.length > 0 ? (
+                    <div className="notif-empty-state">
+                      <div className="notif-empty-icon-wrap notif-empty-icon-wrap--cleared">
+                        <CheckCheck className="notif-empty-icon" aria-hidden="true" />
+                      </div>
+                      <h4 className="notif-empty-title">Semua Notifikasi Telah Dibersihkan</h4>
+                      <p className="notif-empty-desc">
+                        {dismissedCount} notifikasi telah Anda bersihkan untuk sesi ini.
+                      </p>
+                      <button
+                        type="button"
+                        className="notif-restore-btn touch-target"
+                        onClick={handleRestoreAlerts}
+                        title="Tampilkan kembali notifikasi aktif"
+                      >
+                        <RotateCcw className="notif-restore-icon" aria-hidden="true" />
+                        <span>Tampilkan Kembali ({rawAlerts.length})</span>
+                      </button>
                     </div>
-                    <h4 className="notif-empty-title">Semua Parameter Normal</h4>
-                    <p className="notif-empty-desc">
-                      Suhu air, pH, Turbidity, dan Salinitas berada dalam batas baku mutu aman perairan/tambak.
-                    </p>
-                  </div>
+                  ) : (
+                    <div className="notif-empty-state">
+                      <div className="notif-empty-icon-wrap">
+                        <CheckCircle2 className="notif-empty-icon" aria-hidden="true" />
+                      </div>
+                      <h4 className="notif-empty-title">Semua Parameter Normal</h4>
+                      <p className="notif-empty-desc">
+                        Suhu air, pH, Turbidity, dan Salinitas berada dalam batas baku mutu aman perairan/tambak.
+                      </p>
+                    </div>
+                  )
                 ) : (
                   <ul className="notif-alert-list" role="list">
                     {activeAlerts.map((alert) => (
@@ -323,9 +411,20 @@ export default function HeaderBar({
                             <strong className="notif-alert-card__title">
                               {alert.title}
                             </strong>
-                            <span className="notif-alert-card__time">
-                              {alert.time}
-                            </span>
+                            <div className="notif-alert-card__meta-actions">
+                              <span className="notif-alert-card__time">
+                                {alert.time}
+                              </span>
+                              <button
+                                type="button"
+                                className="notif-card-dismiss-btn"
+                                onClick={(e) => handleDismissAlert(alert.id, e)}
+                                title="Hapus notifikasi ini"
+                                aria-label={`Hapus notifikasi ${alert.title}`}
+                              >
+                                <X className="notif-card-dismiss-icon" aria-hidden="true" />
+                              </button>
+                            </div>
                           </div>
                           <p className="notif-alert-card__msg">
                             {alert.message}
@@ -342,19 +441,32 @@ export default function HeaderBar({
                 )}
               </div>
 
-              {/* Dropdown Footer: Shortcut to Threshold Settings */}
+              {/* Dropdown Footer: Shortcut to Threshold Settings & Restore Action */}
               <div className="notif-dropdown__footer">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsDropdownOpen(false)
-                    navigate('/pengaturan')
-                  }}
-                  className="notif-footer-link"
-                >
-                  <SlidersHorizontal className="notif-footer-icon" aria-hidden="true" />
-                  <span>Konfigurasi Ambang Batas di Pengaturan</span>
-                </button>
+                <div className="notif-footer-row">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsDropdownOpen(false)
+                      navigate('/pengaturan')
+                    }}
+                    className="notif-footer-link"
+                  >
+                    <SlidersHorizontal className="notif-footer-icon" aria-hidden="true" />
+                    <span>Konfigurasi Ambang Batas</span>
+                  </button>
+                  {dismissedCount > 0 && totalAlertsCount > 0 && (
+                    <button
+                      type="button"
+                      onClick={handleRestoreAlerts}
+                      className="notif-footer-restore-btn"
+                      title="Pulihkan notifikasi yang sebelumnya dibersihkan"
+                    >
+                      <RotateCcw className="notif-footer-restore-icon" aria-hidden="true" />
+                      <span>Pulihkan ({dismissedCount})</span>
+                    </button>
+                  )}
+                </div>
               </div>
             </div>
           )}
