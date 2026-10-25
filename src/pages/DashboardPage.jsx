@@ -1,7 +1,6 @@
 import { RotateCcw } from 'lucide-react'
 import { useTelemetry } from '../hooks/useTelemetry'
 import PageHeader from '../components/common/PageHeader'
-import StatusBadge from '../components/common/StatusBadge'
 import LoadingState from '../components/common/LoadingState'
 import ErrorState from '../components/common/ErrorState'
 import EmptyState from '../components/common/EmptyState'
@@ -27,15 +26,6 @@ export default function DashboardPage() {
       <PageHeader
         title="Halo, Pengguna 👋"
         subtitle="Pantau kondisi fisik kualitas air secara real-time dari perangkat IoT Anda."
-        actions={
-          <div className="dashboard-header-actions">
-            <StatusBadge
-              variant={telemetry?.connectionStatus === 'online' ? 'normal' : telemetry?.connectionStatus || 'unknown'}
-              label={`ESP32: ${telemetry?.connectionLabel || 'Tidak Diketahui'}`}
-              size="md"
-            />
-          </div>
-        }
       />
 
       {/* 2. Telemetry Stale / Offline / Browser Offline / Partial Failure Banner */}

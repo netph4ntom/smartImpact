@@ -1,6 +1,5 @@
 import { useTelemetry } from '../hooks/useTelemetry'
 import PageHeader from '../components/common/PageHeader'
-import StatusBadge from '../components/common/StatusBadge'
 import DeviceCard from '../components/settings/DeviceCard'
 import ThresholdConfigForm from '../components/settings/ThresholdConfigForm'
 import PreferencesForm from '../components/settings/PreferencesForm'
@@ -16,13 +15,6 @@ export default function SettingsPage() {
       <PageHeader
         title="Pengaturan"
         subtitle="Atur preferensi aplikasi, konfigurasi batas sensor, dan informasi perangkat."
-        actions={
-          <StatusBadge
-            variant={telemetry?.connectionStatus === 'online' ? 'normal' : telemetry?.connectionStatus || 'unknown'}
-            label={`ESP32: ${telemetry?.connectionLabel || 'Tidak Diketahui'}`}
-            size="md"
-          />
-        }
       />
 
       <div className="settings-content-flow">
