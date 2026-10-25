@@ -1,9 +1,11 @@
+import { Download } from 'lucide-react'
 import StatusBadge from '../common/StatusBadge'
 import './HistoryTable.css'
 
 export default function HistoryTable({
   dataPoints = [],
   parameterMeta,
+  onDownloadCsv,
 }) {
   const unit = parameterMeta?.unit ? ` ${parameterMeta.unit}` : ''
 
@@ -17,12 +19,26 @@ export default function HistoryTable({
   return (
     <div className="history-table-section card" aria-labelledby="history-table-title">
       <div className="history-table-section__header">
-        <h2 id="history-table-title" className="history-table-section__title">
-          Daftar Pembacaan Terkini ({parameterMeta?.name})
-        </h2>
-        <span className="history-table-section__count">
-          {displayRows.length} titik data
-        </span>
+        <div>
+          <h2 id="history-table-title" className="history-table-section__title">
+            Daftar Pembacaan Terkini ({parameterMeta?.name})
+          </h2>
+          <span className="history-table-section__count">
+            {displayRows.length} titik data
+          </span>
+        </div>
+
+        {onDownloadCsv && (
+          <button
+            type="button"
+            onClick={onDownloadCsv}
+            className="table-download-csv-btn touch-target"
+            title={`Unduh tabel data ${parameterMeta?.name || ''} sebagai CSV`}
+          >
+            <Download className="table-download-icon" aria-hidden="true" />
+            <span>Unduh CSV</span>
+          </button>
+        )}
       </div>
 
       <div className="history-table-container">

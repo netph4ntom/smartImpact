@@ -3,6 +3,7 @@ import { TelemetryContext } from './telemetryContextDefinition'
 import { fetchLatestTelemetry } from '../services/telemetryService'
 import { loadPreferences } from '../services/settingsService'
 import { useNetworkStatus } from '../hooks/useNetworkStatus'
+import { recordLiveTelemetryPoint } from '../services/historyBuffer.js'
 
 /**
  * TelemetryProvider
@@ -43,8 +44,18 @@ export function TelemetryProvider({ children }) {
         })
 
         if (!isCancelled && !abortController.signal.aborted) {
-          setTelemetry(data)
-          lastValidTelemetryRef.current = data
+          // If server didn't provide full history (standard Blynk REST API), use the rolling live buffer
+          const liveHistory = (!Array.isArray(data.history) || data.history.length === 0)
+            ? recordLiveTelemetryPoint(data)
+            : data.history
+
+          const enrichedData = {
+            ...data,
+            history: liveHistory,
+          }
+
+          setTelemetry(enrichedData)
+          lastValidTelemetryRef.current = enrichedData
           setError(null)
           setFetchWarning(null)
           setLoading(false)

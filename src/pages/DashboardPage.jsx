@@ -84,7 +84,7 @@ export default function DashboardPage() {
           <section className="dashboard-bottom-grid" aria-label="Ringkasan Historis dan Info Perangkat">
             {/* Overview 24h Chart (renders only if history is available, otherwise EmptyState inside) */}
             <div className="dashboard-chart-col">
-              <OverviewChart history={telemetry.history} />
+              <OverviewChart history={telemetry.history} deviceName={telemetry.deviceName} />
             </div>
 
             {/* ESP32 Hardware Device Widget */}

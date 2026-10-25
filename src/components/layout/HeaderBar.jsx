@@ -1,12 +1,157 @@
-import { Bell, Radio } from 'lucide-react'
+import { useState, useRef, useEffect, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
+import {
+  Bell,
+  Radio,
+  AlertOctagon,
+  AlertTriangle,
+  CheckCircle2,
+  X,
+  SlidersHorizontal,
+} from 'lucide-react'
+import { loadPreferences } from '../../services/settingsService.js'
 import './HeaderBar.css'
 
 export default function HeaderBar({
   deviceName = 'ESP32',
   connectionStatus = 'online',
   connectionLabel = 'Online',
-  lastUpdated = '12 Jun 2025, 14:32',
+  lastUpdated = 'Belum ada data',
+  sensors = [],
+  hasPartialFailure = false,
+  failedSensors = [],
 }) {
+  const navigate = useNavigate()
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
+  const dropdownRef = useRef(null)
+  const prevDangerCountRef = useRef(0)
+
+  // 1. Compute Active Alerts based on Critical Thresholds, Warnings, and Device Health
+  const activeAlerts = useMemo(() => {
+    const list = []
+
+    // A. Critical & Warning Sensor Threshold Alerts
+    if (Array.isArray(sensors)) {
+      sensors.forEach((sensor) => {
+        if (sensor.status === 'danger') {
+          list.push({
+            id: `critical-${sensor.id}`,
+            type: 'danger',
+            sensorName: sensor.name,
+            title: `Batas Kritis: ${sensor.name}`,
+            message: `${sensor.name} terdeteksi bernilai ${sensor.formattedValue} ${sensor.unit || ''}. Nilai telah melewati ambang batas aman.`,
+            reason: sensor.reason,
+            time: sensor.updatedAt || 'Terkini',
+          })
+        } else if (sensor.status === 'warning') {
+          list.push({
+            id: `warn-${sensor.id}`,
+            type: 'warning',
+            sensorName: sensor.name,
+            title: `Perhatian: ${sensor.name}`,
+            message: `${sensor.name} berada dalam rentang waspada (${sensor.formattedValue} ${sensor.unit || ''}).`,
+            reason: sensor.reason,
+            time: sensor.updatedAt || 'Terkini',
+          })
+        }
+      })
+    }
+
+    // B. Partial Hardware / Sensor ADC Failure Alert
+    if (hasPartialFailure && Array.isArray(failedSensors) && failedSensors.length > 0) {
+      list.push({
+        id: 'partial-failure',
+        type: 'danger',
+        sensorName: 'Sensor Hardware',
+        title: 'Sensor Terputus / Gangguan ADC',
+        message: `Sensor [${failedSensors.join(', ')}] tidak mengirimkan data yang valid. Periksa sambungan kabel sensor pada ESP32.`,
+        time: 'Peringatan Aktif',
+      })
+    }
+
+    // C. Device Offline or Stale Alert
+    if (connectionStatus === 'offline') {
+      list.push({
+        id: 'device-offline',
+        type: 'danger',
+        sensorName: deviceName,
+        title: `${deviceName} Offline`,
+        message: 'Perangkat tidak mengirimkan sinyal telemetri dalam waktu lama. Periksa daya dan koneksi Wi-Fi ESP32.',
+        time: 'Peringatan Aktif',
+      })
+    } else if (connectionStatus === 'stale') {
+      list.push({
+        id: 'device-stale',
+        type: 'warning',
+        sensorName: deviceName,
+        title: `${deviceName} Terlambat`,
+        message: 'Telemetri terakhir diterima lebih dari 5 menit yang lalu.',
+        time: 'Peringatan Aktif',
+      })
+    }
+
+    return list
+  }, [sensors, hasPartialFailure, failedSensors, connectionStatus, deviceName])
+
+  const dangerAlerts = activeAlerts.filter((a) => a.type === 'danger')
+  const warningAlerts = activeAlerts.filter((a) => a.type === 'warning')
+  const totalAlertsCount = activeAlerts.length
+  const hasDanger = dangerAlerts.length > 0
+
+  // 2. Play subtle Web Audio API chime when critical alert emerges (if soundAlerts enabled)
+  useEffect(() => {
+    if (dangerAlerts.length > prevDangerCountRef.current) {
+      try {
+        const prefs = loadPreferences()
+        if (prefs?.soundAlerts) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext
+          if (AudioContext) {
+            const ctx = new AudioContext()
+            const osc = ctx.createOscillator()
+            const gain = ctx.createGain()
+            osc.type = 'sine'
+            osc.frequency.setValueAtTime(880, ctx.currentTime)
+            osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.25)
+            gain.gain.setValueAtTime(0.12, ctx.currentTime)
+            gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.25)
+            osc.connect(gain)
+            gain.connect(ctx.destination)
+            osc.start()
+            osc.stop(ctx.currentTime + 0.25)
+          }
+        }
+      } catch {
+        // Ignore autoplay block
+      }
+    }
+    prevDangerCountRef.current = dangerAlerts.length
+  }, [dangerAlerts.length])
+
+  // 3. Close popover on outside click and Escape key
+  useEffect(() => {
+    if (!isDropdownOpen) return
+
+    const handlePointerDown = (e) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+        setIsDropdownOpen(false)
+      }
+    }
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setIsDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('pointerdown', handlePointerDown)
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown)
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isDropdownOpen])
+
   const getStatusClass = () => {
     switch (connectionStatus) {
       case 'online':
@@ -60,16 +205,162 @@ export default function HeaderBar({
           {lastUpdated}
         </span>
 
-        {/* Accessible Notification Button */}
-        <button
-          type="button"
-          className="header-bar__action-btn touch-target"
-          aria-label="Lihat notifikasi dan peringatan sistem"
-          title="Notifikasi"
-        >
-          <Bell className="header-bar__action-icon" aria-hidden="true" />
-        </button>
+        {/* Interactive Notification Bell Container */}
+        <div className="header-bar__bell-wrap" ref={dropdownRef}>
+          <button
+            type="button"
+            className={`header-bar__action-btn touch-target ${
+              hasDanger
+                ? 'header-bar__action-btn--danger'
+                : totalAlertsCount > 0
+                  ? 'header-bar__action-btn--warning'
+                  : ''
+            }`}
+            aria-label={`Notifikasi peringatan ambang batas: ${totalAlertsCount} peringatan aktif`}
+            aria-expanded={isDropdownOpen}
+            aria-haspopup="dialog"
+            title={
+              hasDanger
+                ? `${dangerAlerts.length} parameter melewati batas kritis!`
+                : totalAlertsCount > 0
+                  ? `${warningAlerts.length} parameter dalam status waspada`
+                  : 'Semua kondisi kualitas air normal'
+            }
+            onClick={() => setIsDropdownOpen((prev) => !prev)}
+          >
+            <Bell
+              className={`header-bar__action-icon ${
+                hasDanger ? 'header-bar__action-icon--ringing' : ''
+              }`}
+              aria-hidden="true"
+            />
+            {totalAlertsCount > 0 && (
+              <span
+                className={`header-bar__bell-badge ${
+                  hasDanger
+                    ? 'header-bar__bell-badge--danger'
+                    : 'header-bar__bell-badge--warning'
+                }`}
+                aria-hidden="true"
+              >
+                {totalAlertsCount}
+              </span>
+            )}
+          </button>
+
+          {/* Accessible Notification Popover Panel */}
+          {isDropdownOpen && (
+            <div
+              className="header-bar__notif-dropdown"
+              role="dialog"
+              aria-modal="false"
+              aria-label="Pusat Notifikasi Ambang Batas Kualitas Air"
+            >
+              {/* Dropdown Header */}
+              <div className="notif-dropdown__header">
+                <div className="notif-dropdown__header-title-wrap">
+                  <h3 className="notif-dropdown__title">Peringatan Kualitas Air</h3>
+                  <span
+                    className={`notif-dropdown__badge ${
+                      hasDanger
+                        ? 'notif-dropdown__badge--danger'
+                        : totalAlertsCount > 0
+                          ? 'notif-dropdown__badge--warning'
+                          : 'notif-dropdown__badge--normal'
+                    }`}
+                  >
+                    {hasDanger
+                      ? `${dangerAlerts.length} Kritis`
+                      : totalAlertsCount > 0
+                        ? `${warningAlerts.length} Perhatian`
+                        : 'Normal'}
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  className="notif-dropdown__close-btn"
+                  onClick={() => setIsDropdownOpen(false)}
+                  aria-label="Tutup panel notifikasi"
+                >
+                  <X className="notif-close-icon" aria-hidden="true" />
+                </button>
+              </div>
+
+              {/* Dropdown Body: Empty State or Alerts List */}
+              <div className="notif-dropdown__body">
+                {totalAlertsCount === 0 ? (
+                  <div className="notif-empty-state">
+                    <div className="notif-empty-icon-wrap">
+                      <CheckCircle2 className="notif-empty-icon" aria-hidden="true" />
+                    </div>
+                    <h4 className="notif-empty-title">Semua Parameter Normal</h4>
+                    <p className="notif-empty-desc">
+                      Suhu air, pH, Turbidity, dan Salinitas berada dalam batas baku mutu aman perairan/tambak.
+                    </p>
+                  </div>
+                ) : (
+                  <ul className="notif-alert-list" role="list">
+                    {activeAlerts.map((alert) => (
+                      <li
+                        key={alert.id}
+                        className={`notif-alert-card notif-alert-card--${alert.type}`}
+                      >
+                        <div className="notif-alert-card__icon-col">
+                          {alert.type === 'danger' ? (
+                            <AlertOctagon
+                              className="notif-alert-icon notif-alert-icon--danger"
+                              aria-hidden="true"
+                            />
+                          ) : (
+                            <AlertTriangle
+                              className="notif-alert-icon notif-alert-icon--warning"
+                              aria-hidden="true"
+                            />
+                          )}
+                        </div>
+                        <div className="notif-alert-card__content">
+                          <div className="notif-alert-card__top">
+                            <strong className="notif-alert-card__title">
+                              {alert.title}
+                            </strong>
+                            <span className="notif-alert-card__time">
+                              {alert.time}
+                            </span>
+                          </div>
+                          <p className="notif-alert-card__msg">
+                            {alert.message}
+                          </p>
+                          {alert.reason && (
+                            <span className="notif-alert-card__reason">
+                              {alert.reason}
+                            </span>
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              {/* Dropdown Footer: Shortcut to Threshold Settings */}
+              <div className="notif-dropdown__footer">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsDropdownOpen(false)
+                    navigate('/pengaturan')
+                  }}
+                  className="notif-footer-link"
+                >
+                  <SlidersHorizontal className="notif-footer-icon" aria-hidden="true" />
+                  <span>Konfigurasi Ambang Batas di Pengaturan</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </header>
   )
 }
+

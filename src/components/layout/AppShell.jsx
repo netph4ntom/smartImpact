@@ -81,6 +81,9 @@ export default function AppShell() {
           connectionStatus={telemetry?.connectionStatus || 'unknown'}
           connectionLabel={telemetry?.connectionLabel || 'Tidak Diketahui'}
           lastUpdated={telemetry?.formattedReceivedAt || 'Belum ada data'}
+          sensors={telemetry?.sensors || []}
+          hasPartialFailure={telemetry?.hasPartialFailure || false}
+          failedSensors={telemetry?.failedSensors || []}
         />
 
         {/* Content Area */}

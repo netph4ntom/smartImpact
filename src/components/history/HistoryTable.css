@@ -29,6 +29,33 @@
   color: var(--color-text-muted);
 }
 
+.table-download-csv-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-brand-900);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-control);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.table-download-csv-btn:hover {
+  background-color: var(--color-surface-hover);
+  border-color: var(--color-brand-600);
+  color: var(--color-brand-600);
+}
+
+.table-download-icon {
+  width: 14px;
+  height: 14px;
+}
+
 .history-table-container {
   width: 100%;
   overflow-x: auto;

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { RefreshCw } from 'lucide-react'
+import { RefreshCw, Download } from 'lucide-react'
 import { useTelemetry } from '../hooks/useTelemetry'
 import { fetchHistory } from '../services/telemetryService'
 import { SENSOR_METADATA } from '../utils/thresholds.js'
+import { exportHistoryParameterCsv } from '../utils/csvExport.js'
 import PageHeader from '../components/common/PageHeader'
 import LoadingState from '../components/common/LoadingState'
 import ErrorState from '../components/common/ErrorState'
@@ -93,6 +94,19 @@ export default function HistoryPage() {
   }
   const rangeDisplay = rangeLabels[currentRange] || currentRange
 
+  const handleDownloadCsv = () => {
+    if (!historyResult?.dataPoints || historyResult.dataPoints.length === 0) {
+      alert('Belum ada data riwayat yang dapat diunduh.')
+      return
+    }
+    exportHistoryParameterCsv(
+      parameterMeta,
+      historyResult.dataPoints,
+      currentRange,
+      telemetry?.deviceName || 'ESP32',
+    )
+  }
+
   return (
     <div className="history-page">
       {/* 1. Page Header */}
@@ -105,6 +119,16 @@ export default function HistoryPage() {
               selectedRange={currentRange}
               onSelectRange={handleSelectRange}
             />
+            <button
+              type="button"
+              onClick={handleDownloadCsv}
+              className="history-download-csv-btn touch-target"
+              disabled={loading || !historyResult?.dataPoints?.length}
+              title={`Unduh riwayat data ${parameterMeta.name} (${rangeDisplay}) dalam format CSV`}
+            >
+              <Download className="history-download-icon" aria-hidden="true" />
+              <span>Unduh CSV</span>
+            </button>
           </div>
         }
       />
@@ -159,6 +183,7 @@ export default function HistoryPage() {
           <HistoryTable
             dataPoints={historyResult?.dataPoints}
             parameterMeta={parameterMeta}
+            onDownloadCsv={handleDownloadCsv}
           />
         </div>
       )}
