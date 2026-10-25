@@ -106,29 +106,32 @@ export default function SingleMetricChart({
       <div className="single-metric-chart-container">
         <ResponsiveContainer
           width="100%"
-          height={320}
+          height="100%"
           minWidth={0}
-          minHeight={320}
-          initialDimension={{ width: 600, height: 320 }}
+          minHeight={240}
         >
           <LineChart
             data={dataPoints}
-            margin={{ top: 15, right: 15, left: 0, bottom: 0 }}
+            margin={{ top: 12, right: 12, left: -10, bottom: 0 }}
           >
             <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border-subtle)" vertical={false} />
             <XAxis
               dataKey="displayLabel"
               stroke="var(--color-text-subtle)"
-              fontSize={12}
+              fontSize={11}
               tickLine={false}
               axisLine={{ stroke: 'var(--color-border)' }}
+              interval="preserveStartEnd"
+              minTickGap={24}
+              tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }}
             />
             <YAxis
               stroke="var(--color-text-subtle)"
-              fontSize={12}
+              fontSize={11}
               tickLine={false}
               axisLine={{ stroke: 'var(--color-border)' }}
-              tickFormatter={(val) => `${val}${unit ? ` ${unit}` : ''}`}
+              width={36}
+              tick={{ fill: 'var(--color-text-muted)', fontSize: 11 }}
               domain={['auto', 'auto']}
             />
             <Tooltip
@@ -139,9 +142,15 @@ export default function SingleMetricChart({
               dataKey="value"
               name={parameterMeta?.name}
               stroke={primaryColor}
-              strokeWidth={3}
-              dot={{ r: isSinglePoint ? 6 : 3.5, fill: primaryColor }}
-              activeDot={{ r: 6 }}
+              strokeWidth={2.5}
+              dot={
+                isSinglePoint
+                  ? { r: 6, fill: primaryColor }
+                  : dataPoints.length <= 10
+                    ? { r: 2.5, fill: primaryColor }
+                    : false
+              }
+              activeDot={{ r: 5, strokeWidth: 2, stroke: '#FFFFFF' }}
               connectNulls={false} // Does not connect through invalid/null readings
               isAnimationActive={false}
             />

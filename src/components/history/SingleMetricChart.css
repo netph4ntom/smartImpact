@@ -51,8 +51,28 @@
 
 .single-metric-chart-container {
   width: 100%;
-  height: 320px;
-  min-height: 320px;
+  height: 300px;
+  min-height: 240px;
+}
+
+@media (max-width: 640px) {
+  .single-metric-card {
+    padding: var(--space-4) var(--space-3);
+    gap: var(--space-3);
+  }
+
+  .single-metric-chart-container {
+    height: 260px;
+    min-height: 220px;
+  }
+
+  .single-metric-card__title {
+    font-size: 0.9375rem;
+  }
+
+  .single-metric-card__sub {
+    font-size: 0.75rem;
+  }
 }
 
 /* Tooltip */

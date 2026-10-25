@@ -32,7 +32,9 @@ function normalizeHistoryPayload(data, parameter, range) {
       displayLabel:
         range === '7d'
           ? new Intl.DateTimeFormat('id-ID', { day: 'numeric', month: 'short' }).format(tsDate)
-          : new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false }).format(tsDate),
+          : new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false })
+              .format(tsDate)
+              .replace('.', ':'),
       value: valid ? num : null,
       rawValue: rawVal,
       valid,
