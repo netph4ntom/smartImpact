@@ -115,7 +115,7 @@ export default function Sidebar({
             <div className="sidebar__quote-icon-wrap">
               <Leaf className="sidebar__quote-icon" aria-hidden="true" />
             </div>
-            <p className="sidebar__quote-text">Air Bersih, Masa Depan Lebih Baik</p>
+            <p className="sidebar__quote-text">Tambak Cerdas, Air Terpantau</p>
             <span className="sidebar__quote-brand">smartimpact</span>
           </div>
         )}

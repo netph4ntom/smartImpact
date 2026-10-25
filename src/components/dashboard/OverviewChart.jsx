@@ -60,7 +60,7 @@ export default function OverviewChart({ history = [] }) {
       <div className="overview-chart-card card">
         <div className="overview-chart-card__header">
           <h2 className="overview-chart-card__title">
-            Grafik Kualitas Air (24 Jam Terakhir)
+            Grafik Kualitas Air
           </h2>
           <span className="overview-chart-card__sub">
             Histori telemetri berkala
@@ -79,7 +79,7 @@ export default function OverviewChart({ history = [] }) {
       <div className="overview-chart-card__header">
         <div>
           <h2 id="chart-title" className="overview-chart-card__title">
-            Grafik Kualitas Air (24 Jam Terakhir)
+            Grafik Kualitas Air
           </h2>
           <span className="overview-chart-card__sub">
             Tren fluktuasi parameter kualitas air dalam 24 jam

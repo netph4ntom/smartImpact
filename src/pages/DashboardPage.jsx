@@ -25,7 +25,7 @@ export default function DashboardPage() {
       {/* 1. Page Header */}
       <PageHeader
         title="Halo, Pengguna 👋"
-        subtitle="Pantau kondisi fisik kualitas air secara real-time dari perangkat IoT Anda."
+        subtitle="Pantau kondisi kualitas air secara real-time dari perangkat IoT Anda."
       />
 
       {/* 2. Telemetry Stale / Offline / Browser Offline / Partial Failure Banner */}
