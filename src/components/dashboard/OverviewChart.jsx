@@ -8,9 +8,7 @@ import {
   Legend,
   CartesianGrid,
 } from 'recharts'
-import { Download } from 'lucide-react'
 import EmptyState from '../common/EmptyState'
-import { exportDashboardTelemetryCsv } from '../../utils/csvExport.js'
 import './OverviewChart.css'
 
 /**
@@ -55,11 +53,7 @@ function CustomChartTooltip({ active, payload, label }) {
  *
  * @param {Array<object>} history - Historical timeline array
  */
-export default function OverviewChart({ history = [], deviceName = 'ESP32' }) {
-  const handleDownloadCsv = () => {
-    exportDashboardTelemetryCsv(history, deviceName)
-  }
-
+export default function OverviewChart({ history = [] }) {
   // If no history data points are available, render graceful EmptyState
   if (!Array.isArray(history) || history.length === 0) {
     return (
@@ -99,16 +93,6 @@ export default function OverviewChart({ history = [], deviceName = 'ESP32' }) {
             Pencatatan tren real-time ({history.length} titik data)
           </span>
         </div>
-
-        <button
-          type="button"
-          onClick={handleDownloadCsv}
-          className="chart-download-btn touch-target"
-          title="Unduh seluruh histori telemetri dalam format CSV"
-        >
-          <Download className="chart-download-icon" aria-hidden="true" />
-          <span>Unduh CSV</span>
-        </button>
       </div>
 
       <div className="overview-chart-container">

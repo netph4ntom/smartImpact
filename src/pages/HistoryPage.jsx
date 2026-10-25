@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { RefreshCw, Download } from 'lucide-react'
+import { RefreshCw } from 'lucide-react'
 import { useTelemetry } from '../hooks/useTelemetry'
 import { fetchHistory } from '../services/telemetryService'
 import { SENSOR_METADATA } from '../utils/thresholds.js'
@@ -114,22 +114,10 @@ export default function HistoryPage() {
         title="Riwayat"
         subtitle="Lihat data historis kualitas air berdasarkan parameter dan periode waktu."
         actions={
-          <div className="history-header-actions">
-            <TimeRangeSelector
-              selectedRange={currentRange}
-              onSelectRange={handleSelectRange}
-            />
-            <button
-              type="button"
-              onClick={handleDownloadCsv}
-              className="history-download-csv-btn touch-target"
-              disabled={loading || !historyResult?.dataPoints?.length}
-              title={`Unduh riwayat data ${parameterMeta.name} (${rangeDisplay}) dalam format CSV`}
-            >
-              <Download className="history-download-icon" aria-hidden="true" />
-              <span>Unduh CSV</span>
-            </button>
-          </div>
+          <TimeRangeSelector
+            selectedRange={currentRange}
+            onSelectRange={handleSelectRange}
+          />
         }
       />
 

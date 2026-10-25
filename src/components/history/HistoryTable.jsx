@@ -21,7 +21,7 @@ export default function HistoryTable({
       <div className="history-table-section__header">
         <div>
           <h2 id="history-table-title" className="history-table-section__title">
-            Daftar Pembacaan Terkini ({parameterMeta?.name})
+            Riwayat {parameterMeta?.name}
           </h2>
           <span className="history-table-section__count">
             {displayRows.length} titik data
