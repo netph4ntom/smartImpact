@@ -33,8 +33,8 @@ function CustomChartTooltip({ active, payload, label }) {
                   ? '°C'
                   : entry.name.includes('Turbidity')
                     ? 'NTU'
-                    : entry.name.includes('TDS')
-                      ? 'ppm'
+                    : entry.name.includes('Salinitas') || entry.name.includes('TDS')
+                      ? 'ppt'
                       : ''}
               </strong>
             </div>
@@ -157,11 +157,11 @@ export default function OverviewChart({ history = [] }) {
               isAnimationActive={false}
             />
 
-            {/* TDS */}
+            {/* Salinitas */}
             <Line
               type="monotone"
               dataKey="tds"
-              name="TDS (ppm)"
+              name="Salinitas (ppt)"
               stroke="#8B5CF6"
               strokeWidth={2.5}
               dot={{ r: 3, fill: '#8B5CF6' }}

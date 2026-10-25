@@ -9,7 +9,7 @@ export const TECHNICAL_LIMITS = {
   temperature: { minPossible: 0, maxPossible: 60, unit: '°C' },
   ph: { minPossible: 0, maxPossible: 14, unit: 'pH' },
   turbidity: { minPossible: 0, maxPossible: 100, unit: 'NTU' },
-  tds: { minPossible: 0, maxPossible: 2000, unit: 'ppm' },
+  tds: { minPossible: 0, maxPossible: 100, unit: 'ppt' },
 }
 
 export const DEFAULT_PREFERENCES = {
@@ -57,12 +57,12 @@ export function validateThresholdInputs(formValues) {
     errors.turbidity = `Batas kekeruhan harus bernilai positif (maksimal ${TECHNICAL_LIMITS.turbidity.maxPossible} NTU).`
   }
 
-  // 4. TDS
+  // 4. Salinitas
   const tdsMax = Number(formValues.tdsMax)
   if (!Number.isFinite(tdsMax)) {
-    errors.tds = 'Batas TDS harus berupa angka yang valid.'
+    errors.tds = 'Batas salinitas harus berupa angka yang valid.'
   } else if (tdsMax <= 0 || tdsMax > TECHNICAL_LIMITS.tds.maxPossible) {
-    errors.tds = `Batas TDS harus bernilai positif (maksimal ${TECHNICAL_LIMITS.tds.maxPossible} ppm).`
+    errors.tds = `Batas salinitas harus bernilai positif (maksimal ${TECHNICAL_LIMITS.tds.maxPossible} ppt).`
   }
 
   return {

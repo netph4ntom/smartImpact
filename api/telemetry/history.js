@@ -64,7 +64,7 @@ export default async function handler(req, res) {
         ? 7.2
         : parameter === 'turbidity'
           ? 4.5
-          : 315
+          : 24.5
 
   const points = []
   const now = Date.now()
@@ -73,9 +73,7 @@ export default async function handler(req, res) {
     const ts = new Date(now - i * stepMs).toISOString()
     const variance = Math.sin((i / count) * Math.PI * 2) * (baseValue * 0.04)
     const val = Number(
-      (baseValue + (i === 0 && Number.isFinite(numVal) ? 0 : variance)).toFixed(
-        parameter === 'tds' ? 0 : 1,
-      ),
+      (baseValue + (i === 0 && Number.isFinite(numVal) ? 0 : variance)).toFixed(1),
     )
 
     points.push({

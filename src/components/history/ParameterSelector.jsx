@@ -23,8 +23,8 @@ export default function ParameterSelector({ selectedParameter, onSelectParameter
     },
     {
       id: 'tds',
-      label: 'TDS',
-      unit: 'ppm',
+      label: 'Salinitas',
+      unit: 'ppt',
       icon: Droplets,
     },
   ]

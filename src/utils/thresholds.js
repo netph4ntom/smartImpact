@@ -37,10 +37,10 @@ export const SENSOR_METADATA = {
   },
   tds: {
     id: 'tds',
-    name: 'TDS',
-    unit: 'ppm',
-    decimals: 0,
-    description: 'Total padatan terlarut (Total Dissolved Solids)',
+    name: 'Salinitas',
+    unit: 'ppt',
+    decimals: 1,
+    description: 'Kadar garam atau salinitas air perairan/tambak',
     iconType: 'droplets',
   },
 }
@@ -73,10 +73,10 @@ export const DEFAULT_THRESHOLDS = {
   },
   tds: {
     min: 0,
-    max: 300,
+    max: 35,
     warnMin: 0,
-    warnMax: 500,
-    reference: 'Indikator kandungan mineral terlarut',
+    warnMax: 40,
+    reference: 'Standar batas salinitas air tambak budidaya',
   },
 }
 

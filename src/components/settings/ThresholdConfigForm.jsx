@@ -20,7 +20,7 @@ export default function ThresholdConfigForm() {
         phMin: thresholds?.ph?.min !== undefined ? String(thresholds.ph.min) : '6.5',
         phMax: thresholds?.ph?.max !== undefined ? String(thresholds.ph.max) : '8.5',
         turbMax: thresholds?.turbidity?.max !== undefined ? String(thresholds.turbidity.max) : '5.0',
-        tdsMax: thresholds?.tds?.max !== undefined ? String(thresholds.tds.max) : '300',
+        tdsMax: thresholds?.tds?.max !== undefined ? String(thresholds.tds.max) : '35',
       },
     }
   })
@@ -263,10 +263,10 @@ export default function ThresholdConfigForm() {
             )}
           </div>
 
-          {/* 4. TDS */}
+          {/* 4. Salinitas */}
           <div className="threshold-group">
             <label className="threshold-group__label">
-              4. Total Padatan Terlarut (TDS)
+              4. Salinitas Air
             </label>
             <span className="threshold-group__limit-hint">
               Batas atas toleransi ({TECHNICAL_LIMITS.tds.unit})
@@ -275,13 +275,13 @@ export default function ThresholdConfigForm() {
               <span className="threshold-input-prefix">Maksimum Toleransi:</span>
               <input
                 type="number"
-                step="1"
+                step="0.5"
                 value={formData.tdsMax}
                 onChange={(e) => handleChange('tdsMax', e.target.value)}
                 className={`threshold-input ${errors.tds ? 'threshold-input--error' : ''}`}
-                aria-label="Batas maksimum TDS ppm"
+                aria-label="Batas maksimum Salinitas ppt"
               />
-              <span className="threshold-input-suffix">ppm</span>
+              <span className="threshold-input-suffix">ppt</span>
             </div>
             {errors.tds && (
               <p className="threshold-error-msg" role="alert">{errors.tds}</p>

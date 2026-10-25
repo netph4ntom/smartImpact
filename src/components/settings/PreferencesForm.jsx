@@ -96,7 +96,7 @@ export default function PreferencesForm() {
             <div>
               <span className="pref-item__label">Satuan Sensor</span>
               <p className="pref-item__desc">
-                Standar Satuan Internasional: °C, pH, NTU, ppm
+                Standar Satuan Sensor: °C, pH, NTU, ppt
               </p>
             </div>
           </div>

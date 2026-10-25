@@ -47,7 +47,7 @@ console.log('--- 1. Sensor Metadata, Formatting & Units ---')
 assert(SENSOR_METADATA.temperature.unit === '°C', 'Temperature unit is °C')
 assert(SENSOR_METADATA.ph.unit === '', 'pH has dimensionless unit')
 assert(SENSOR_METADATA.turbidity.unit === 'NTU', 'Turbidity unit is NTU')
-assert(SENSOR_METADATA.tds.unit === 'ppm', 'TDS unit is ppm')
+assert(SENSOR_METADATA.tds.unit === 'ppt', 'Salinitas unit is ppt')
 
 assert(formatSensorValue(25.4, 1) === '25.4', 'Formats 25.4 with 1 decimal as "25.4"')
 assert(formatSensorValue(7.234, 1) === '7.2', 'Rounds 7.234 to "7.2"')
@@ -219,7 +219,7 @@ const validForm = {
   phMin: '6.5',
   phMax: '8.5',
   turbMax: '5.0',
-  tdsMax: '300',
+  tdsMax: '35',
 }
 const valResult1 = validateThresholdInputs(validForm)
 assert(valResult1.isValid === true, 'Valid form passes validation with isValid: true')

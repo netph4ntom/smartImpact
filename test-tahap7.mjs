@@ -28,7 +28,7 @@ const standardPayload = {
     temperature: { value: 26.5, unit: '°C' },
     ph: { value: 7.2, unit: '' },
     turbidity: { value: 4.1, unit: 'NTU' },
-    tds: { value: 290, unit: 'ppm' },
+    tds: { value: 28.5, unit: 'ppt' },
   },
 }
 
@@ -38,7 +38,7 @@ assert(norm1.sensors.length === 4, 'Contains 4 water quality sensors')
 assert(norm1.sensors[0].formattedValue === '26.5' && norm1.sensors[0].unit === '°C', 'Temperature normalized with °C')
 assert(norm1.sensors[1].formattedValue === '7.2', 'pH normalized with 1 decimal')
 assert(norm1.sensors[2].formattedValue === '4.1' && norm1.sensors[2].unit === 'NTU', 'Turbidity normalized with NTU')
-assert(norm1.sensors[3].formattedValue === '290' && norm1.sensors[3].unit === 'ppm', 'TDS normalized with ppm')
+assert(norm1.sensors[3].formattedValue === '28.5' && norm1.sensors[3].unit === 'ppt', 'Salinitas normalized with ppt')
 assert(norm1.hasPartialFailure === false, 'No partial failure in standard payload')
 
 // Test 2: Flat payload with string numbers (typical Blynk REST API returns)
@@ -48,14 +48,14 @@ const blynkFlatPayload = {
   temp: '27.4',
   ph: '6.85',
   turb: '3.5',
-  tds: '310',
+  tds: '25.4',
 }
 
 const norm2 = normalizeTelemetry(blynkFlatPayload)
 assert(norm2.sensors[0].value === 27.4, 'Converts string temperature "27.4" to number 27.4')
 assert(norm2.sensors[1].value === 6.85, 'Converts string pH "6.85" to number 6.85')
 assert(norm2.sensors[2].value === 3.5, 'Converts string turbidity "3.5" to number 3.5')
-assert(norm2.sensors[3].value === 310, 'Converts string TDS "310" to number 310')
+assert(norm2.sensors[3].value === 25.4, 'Converts string Salinitas "25.4" to number 25.4')
 
 // Test 3: Partial Sensor Failure
 const partialPayload = {
@@ -70,10 +70,10 @@ const partialPayload = {
 
 const norm3 = normalizeTelemetry(partialPayload)
 assert(norm3.hasPartialFailure === true, 'Accurately flags hasPartialFailure: true')
-assert(norm3.failedSensors.includes('pH') && norm3.failedSensors.includes('TDS'), 'Identifies failed sensors: pH & TDS')
+assert(norm3.failedSensors.includes('pH') && norm3.failedSensors.includes('Salinitas'), 'Identifies failed sensors: pH & Salinitas')
 assert(norm3.sensors[0].valid === true, 'Temperature remains valid and functional')
 assert(norm3.sensors[1].valid === false, 'pH correctly marked invalid')
-assert(norm3.sensors[3].valid === false, 'TDS corrupted reading marked invalid')
+assert(norm3.sensors[3].valid === false, 'Salinitas corrupted reading marked invalid')
 
 // Test 4: Stale and Offline Freshness Evaluation
 const staleDate = new Date(Date.now() - 11 * 60 * 1000).toISOString() // 11 min ago

@@ -50,7 +50,7 @@ function extractSensorValueAndUnit(payload, key, meta) {
     temperature: ['temperature', 'temp', 'suhu', 'temp_c', 'v0', 'V0'],
     ph: ['ph', 'ph_level', 'derajat_keasaman', 'v1', 'V1'],
     turbidity: ['turbidity', 'kekeruhan', 'turb', 'v2', 'V2'],
-    tds: ['tds', 'ppm', 'total_dissolved_solids', 'v3', 'V3'],
+    tds: ['salinitas', 'salinity', 'ppt', 'tds', 'ppm', 'total_dissolved_solids', 'v3', 'V3'],
   }
 
   const aliases = aliasMap[key] || [key]
