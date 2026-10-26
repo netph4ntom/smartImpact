@@ -382,7 +382,7 @@ export default function HeaderBar({
                       </div>
                       <h4 className="notif-empty-title">Semua Parameter Normal</h4>
                       <p className="notif-empty-desc">
-                        Suhu air, pH, Turbidity, dan Salinitas berada dalam batas baku mutu aman perairan/tambak.
+                        Suhu air, Oksigen, Amonia, dan Salinitas berada dalam batas baku mutu aman perairan/tambak.
                       </p>
                     </div>
                   )

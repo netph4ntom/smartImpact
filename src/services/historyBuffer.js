@@ -8,7 +8,7 @@
  * 4. "Trafik sesuai dengan data real sensor dari ESP32."
  */
 
-const STORAGE_KEY = 'smartimpact_live_timeline_v2'
+const STORAGE_KEY = 'smartimpact_live_timeline_v4'
 export const MAX_BUFFER_POINTS = 15
 
 /**
@@ -40,8 +40,8 @@ function createInitialSeedPoints(baseValues = null) {
   const count = 10
 
   const baseTemp = baseValues?.temperature !== null && baseValues?.temperature !== undefined ? baseValues.temperature : 26.8
-  const basePh = baseValues?.ph !== null && baseValues?.ph !== undefined ? baseValues.ph : 7.2
-  const baseTurb = baseValues?.turbidity !== null && baseValues?.turbidity !== undefined ? baseValues.turbidity : 3.6
+  const basePh = baseValues?.ph !== null && baseValues?.ph !== undefined ? baseValues.ph : 5.8
+  const baseTurb = baseValues?.turbidity !== null && baseValues?.turbidity !== undefined ? baseValues.turbidity : 0.05
   const baseTds = baseValues?.tds !== null && baseValues?.tds !== undefined ? baseValues.tds : 24.5
 
   for (let i = count - 1; i >= 0; i--) {
@@ -57,7 +57,7 @@ function createInitialSeedPoints(baseValues = null) {
       fullTime: d.toLocaleString('id-ID'),
       temperature: Number((baseTemp + variance).toFixed(1)),
       ph: Number((basePh + variance * 0.1).toFixed(1)),
-      turbidity: Number((baseTurb + variance * 0.2).toFixed(1)),
+      turbidity: Number((baseTurb + variance * 0.02).toFixed(2)),
       tds: Number((baseTds + variance * 0.2).toFixed(1)), // Salinitas (ppt)
       isSynthetic: !baseValues,
     })

@@ -65,8 +65,8 @@ export function exportDashboardTelemetryCsv(historyPoints = [], deviceName = 'ES
     'Waktu Pencatatan',
     'Jam',
     'Suhu Air (°C)',
-    'pH Air',
-    'Kekeruhan (NTU)',
+    'Oksigen (mg/L)',
+    'Amonia (mg/L)',
     'Salinitas (ppt)',
   ]
 

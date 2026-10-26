@@ -7,8 +7,8 @@ const STORAGE_KEYS = {
 
 export const TECHNICAL_LIMITS = {
   temperature: { minPossible: 0, maxPossible: 60, unit: '°C' },
-  ph: { minPossible: 0, maxPossible: 14, unit: 'pH' },
-  turbidity: { minPossible: 0, maxPossible: 100, unit: 'NTU' },
+  ph: { minPossible: 0, maxPossible: 20, unit: 'mg/L' },
+  turbidity: { minPossible: 0, maxPossible: 20, unit: 'mg/L' },
   tds: { minPossible: 0, maxPossible: 100, unit: 'ppt' },
 }
 
@@ -38,23 +38,23 @@ export function validateThresholdInputs(formValues) {
     errors.temperature = 'Batas minimum suhu harus lebih kecil dari batas maksimum.'
   }
 
-  // 2. pH
+  // 2. Oksigen Terlarut (DO)
   const phMin = Number(formValues.phMin)
   const phMax = Number(formValues.phMax)
   if (!Number.isFinite(phMin) || !Number.isFinite(phMax)) {
-    errors.ph = 'Nilai batas pH harus berupa angka yang valid.'
+    errors.ph = 'Nilai batas oksigen terlarut harus berupa angka yang valid.'
   } else if (phMin < TECHNICAL_LIMITS.ph.minPossible || phMax > TECHNICAL_LIMITS.ph.maxPossible) {
-    errors.ph = 'Skala pH harus berada di antara 0.0 dan 14.0.'
+    errors.ph = `Kadar oksigen terlarut harus berada dalam rentang ${TECHNICAL_LIMITS.ph.minPossible} – ${TECHNICAL_LIMITS.ph.maxPossible} mg/L.`
   } else if (phMin >= phMax) {
-    errors.ph = 'Batas minimum pH harus lebih kecil dari batas maksimum.'
+    errors.ph = 'Batas minimum oksigen harus lebih kecil dari batas maksimum.'
   }
 
-  // 3. Turbidity
+  // 3. Amonia
   const turbMax = Number(formValues.turbMax)
   if (!Number.isFinite(turbMax)) {
-    errors.turbidity = 'Batas kekeruhan (Turbidity) harus berupa angka yang valid.'
+    errors.turbidity = 'Batas amonia harus berupa angka yang valid.'
   } else if (turbMax <= 0 || turbMax > TECHNICAL_LIMITS.turbidity.maxPossible) {
-    errors.turbidity = `Batas kekeruhan harus bernilai positif (maksimal ${TECHNICAL_LIMITS.turbidity.maxPossible} NTU).`
+    errors.turbidity = `Batas amonia harus bernilai positif (maksimal ${TECHNICAL_LIMITS.turbidity.maxPossible} mg/L).`
   }
 
   // 4. Salinitas

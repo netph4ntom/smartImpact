@@ -45,8 +45,10 @@ function assert(condition, message) {
 console.log('--- 1. Sensor Metadata, Formatting & Units ---')
 
 assert(SENSOR_METADATA.temperature.unit === '°C', 'Temperature unit is °C')
-assert(SENSOR_METADATA.ph.unit === '', 'pH has dimensionless unit')
-assert(SENSOR_METADATA.turbidity.unit === 'NTU', 'Turbidity unit is NTU')
+assert(SENSOR_METADATA.ph.unit === 'mg/L', 'Oksigen unit is mg/L')
+assert(SENSOR_METADATA.ph.name === 'Oksigen', 'Oksigen sensor name is Oksigen')
+assert(SENSOR_METADATA.turbidity.unit === 'mg/L', 'Amonia unit is mg/L')
+assert(SENSOR_METADATA.turbidity.name === 'Amonia', 'Amonia sensor name is Amonia')
 assert(SENSOR_METADATA.tds.unit === 'ppt', 'Salinitas unit is ppt')
 
 assert(formatSensorValue(25.4, 1) === '25.4', 'Formats 25.4 with 1 decimal as "25.4"')
@@ -163,8 +165,8 @@ const flatBlynk = {
 }
 const normFlat = normalizeTelemetry(flatBlynk)
 assert(normFlat.sensors[0].value === 28.1, 'Parses v0 string "28.1" to 28.1 °C')
-assert(normFlat.sensors[1].value === 6.9, 'Parses v1 string "6.9" to 6.9 pH')
-assert(normFlat.sensors[2].value === 4.2, 'Parses v2 string "4.2" to 4.2 NTU')
+assert(normFlat.sensors[1].value === 6.9, 'Parses v1 string "6.9" to 6.9 mg/L')
+assert(normFlat.sensors[2].value === 4.2, 'Parses v2 string "4.2" to 4.2 mg/L')
 assert(normFlat.sensors[3].value === 295, 'Parses v3 string "295" to 295 ppm')
 
 // C. Partial sensor failure
@@ -192,14 +194,13 @@ console.log('\n--- 6. Threshold Evaluation Rules ---')
 const tempNormal = evaluateSensorStatus(25.0, 'temperature')
 assert(tempNormal.status === 'normal' && tempNormal.label === 'Normal', '25.0°C evaluates to Normal')
 
-// Warning (between normal max and critical warnMax)
-// DEFAULT_THRESHOLDS.ph has max: 8.5, warnMax: 9.0
-const phWarning = evaluateSensorStatus(8.7, 'ph')
-assert(phWarning.status === 'warning' && phWarning.label === 'Perhatian', 'pH 8.7 evaluates to Warning / Perhatian')
+// Warning (between normal min 4.0 and critical warnMin 3.0)
+const phWarning = evaluateSensorStatus(3.5, 'ph')
+assert(phWarning.status === 'warning' && phWarning.label === 'Perhatian', 'Oksigen 3.5 evaluates to Warning / Perhatian')
 
-// Danger / Critical (exceeds warnMax 9.0)
-const phDanger = evaluateSensorStatus(9.5, 'ph')
-assert(phDanger.status === 'danger' && phDanger.label === 'Kritis', 'pH 9.5 evaluates to Danger / Kritis')
+// Danger / Critical (below warnMin 3.0)
+const phDanger = evaluateSensorStatus(2.0, 'ph')
+assert(phDanger.status === 'danger' && phDanger.label === 'Kritis', 'Oksigen 2.0 evaluates to Danger / Kritis')
 
 // Unconfigured threshold (null)
 const unconfiguredEval = evaluateSensorStatus(25.0, 'temperature', null)
@@ -216,9 +217,9 @@ console.log('\n--- 7. Settings Form Validation ---')
 const validForm = {
   tempMin: '20',
   tempMax: '30',
-  phMin: '6.5',
-  phMax: '8.5',
-  turbMax: '5.0',
+  phMin: '4.0',
+  phMax: '10.0',
+  turbMax: '0.1',
   tdsMax: '35',
 }
 const valResult1 = validateThresholdInputs(validForm)
@@ -229,15 +230,15 @@ const invertedTemp = { ...validForm, tempMin: '32', tempMax: '25' }
 const valResult2 = validateThresholdInputs(invertedTemp)
 assert(valResult2.isValid === false && valResult2.errors.temperature, 'Catches tempMin >= tempMax')
 
-// Invalid: pH outside 0 - 14
-const invalidPh = { ...validForm, phMax: '15.5' }
+// Invalid: Oksigen outside 0 - 20
+const invalidPh = { ...validForm, phMax: '25.0' }
 const valResult3 = validateThresholdInputs(invalidPh)
-assert(valResult3.isValid === false && valResult3.errors.ph, 'Catches pH > 14')
+assert(valResult3.isValid === false && valResult3.errors.ph, 'Catches oksigen > 20')
 
-// Invalid: Negative or 0 turbidity max
+// Invalid: Negative or 0 amonia max
 const negativeTurb = { ...validForm, turbMax: '-2' }
 const valResult4 = validateThresholdInputs(negativeTurb)
-assert(valResult4.isValid === false && valResult4.errors.turbidity, 'Catches negative turbidity threshold')
+assert(valResult4.isValid === false && valResult4.errors.turbidity, 'Catches negative amonia threshold')
 
 // Invalid: Non-numeric strings
 const nonNumeric = { ...validForm, tdsMax: 'tiga_ratus' }

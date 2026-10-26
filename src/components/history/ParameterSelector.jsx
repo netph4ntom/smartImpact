@@ -11,14 +11,14 @@ export default function ParameterSelector({ selectedParameter, onSelectParameter
     },
     {
       id: 'ph',
-      label: 'pH',
-      unit: '',
+      label: 'Oksigen',
+      unit: 'mg/L',
       icon: Activity,
     },
     {
       id: 'turbidity',
-      label: 'Turbidity',
-      unit: 'NTU',
+      label: 'Amonia',
+      unit: 'mg/L',
       icon: Waves,
     },
     {

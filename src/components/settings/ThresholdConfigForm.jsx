@@ -17,9 +17,9 @@ export default function ThresholdConfigForm() {
       values: {
         tempMin: thresholds?.temperature?.min !== undefined ? String(thresholds.temperature.min) : '20',
         tempMax: thresholds?.temperature?.max !== undefined ? String(thresholds.temperature.max) : '30',
-        phMin: thresholds?.ph?.min !== undefined ? String(thresholds.ph.min) : '6.5',
-        phMax: thresholds?.ph?.max !== undefined ? String(thresholds.ph.max) : '8.5',
-        turbMax: thresholds?.turbidity?.max !== undefined ? String(thresholds.turbidity.max) : '5.0',
+        phMin: thresholds?.ph?.min !== undefined ? String(thresholds.ph.min) : '4.0',
+        phMax: thresholds?.ph?.max !== undefined ? String(thresholds.ph.max) : '10.0',
+        turbMax: thresholds?.turbidity?.max !== undefined ? String(thresholds.turbidity.max) : '0.1',
         tdsMax: thresholds?.tds?.max !== undefined ? String(thresholds.tds.max) : '35',
       },
     }
@@ -65,8 +65,8 @@ export default function ThresholdConfigForm() {
       ph: {
         min: Number(formData.phMin),
         max: Number(formData.phMax),
-        warnMin: Math.max(0, Number(formData.phMin) - 0.5),
-        warnMax: Math.min(14, Number(formData.phMax) + 0.5),
+        warnMin: Math.max(0, Number(formData.phMin) - 1.0),
+        warnMax: Math.min(20, Number(formData.phMax) + 2.0),
         reference: 'Konfigurasi Lokal Pengguna',
       },
       turbidity: {
@@ -201,13 +201,13 @@ export default function ThresholdConfigForm() {
             )}
           </div>
 
-          {/* 2. pH */}
+          {/* 2. Oksigen Terlarut (DO) */}
           <div className="threshold-group">
             <label className="threshold-group__label">
-              2. Derajat Keasaman (pH)
+              2. Oksigen Terlarut (DO)
             </label>
             <span className="threshold-group__limit-hint">
-              Skala fisik: 0.0 – 14.0 (Normal netral ~7.0)
+              Batas aman toleransi ({TECHNICAL_LIMITS.ph.unit})
             </span>
             <div className="threshold-group__inputs">
               <div className="threshold-input-wrap">
@@ -218,8 +218,9 @@ export default function ThresholdConfigForm() {
                   value={formData.phMin}
                   onChange={(e) => handleChange('phMin', e.target.value)}
                   className={`threshold-input ${errors.ph ? 'threshold-input--error' : ''}`}
-                  aria-label="Batas minimum pH"
+                  aria-label="Batas minimum oksigen mg/L"
                 />
+                <span className="threshold-input-suffix">mg/L</span>
               </div>
               <div className="threshold-input-wrap">
                 <span className="threshold-input-prefix">Max:</span>
@@ -229,8 +230,9 @@ export default function ThresholdConfigForm() {
                   value={formData.phMax}
                   onChange={(e) => handleChange('phMax', e.target.value)}
                   className={`threshold-input ${errors.ph ? 'threshold-input--error' : ''}`}
-                  aria-label="Batas maksimum pH"
+                  aria-label="Batas maksimum oksigen mg/L"
                 />
+                <span className="threshold-input-suffix">mg/L</span>
               </div>
             </div>
             {errors.ph && (
@@ -238,10 +240,10 @@ export default function ThresholdConfigForm() {
             )}
           </div>
 
-          {/* 3. Turbidity */}
+          {/* 3. Amonia */}
           <div className="threshold-group">
             <label className="threshold-group__label">
-              3. Kekeruhan (Turbidity)
+              3. Kadar Amonia (NH3)
             </label>
             <span className="threshold-group__limit-hint">
               Batas atas toleransi ({TECHNICAL_LIMITS.turbidity.unit})
@@ -250,13 +252,13 @@ export default function ThresholdConfigForm() {
               <span className="threshold-input-prefix">Maksimum Toleransi:</span>
               <input
                 type="number"
-                step="0.1"
+                step="0.01"
                 value={formData.turbMax}
                 onChange={(e) => handleChange('turbMax', e.target.value)}
                 className={`threshold-input ${errors.turbidity ? 'threshold-input--error' : ''}`}
-                aria-label="Batas maksimum kekeruhan NTU"
+                aria-label="Batas maksimum amonia mg/L"
               />
-              <span className="threshold-input-suffix">NTU</span>
+              <span className="threshold-input-suffix">mg/L</span>
             </div>
             {errors.turbidity && (
               <p className="threshold-error-msg" role="alert">{errors.turbidity}</p>

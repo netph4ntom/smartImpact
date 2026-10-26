@@ -48,8 +48,8 @@ function extractSensorValueAndUnit(payload, key, meta) {
   // Shape 3: Flat properties on root payload (e.g. payload.temp, payload.suhu, payload.turbiditas, virtual pins v0-v3)
   const aliasMap = {
     temperature: ['temperature', 'temp', 'suhu', 'temp_c', 'v0', 'V0'],
-    ph: ['ph', 'ph_level', 'derajat_keasaman', 'v1', 'V1'],
-    turbidity: ['turbidity', 'kekeruhan', 'turb', 'v2', 'V2'],
+    ph: ['oksigen', 'oxygen', 'do', 'dissolved_oxygen', 'o2', 'ph', 'ph_level', 'derajat_keasaman', 'v1', 'V1'],
+    turbidity: ['amonia', 'ammonia', 'nh3', 'nh4', 'turbidity', 'kekeruhan', 'turb', 'v2', 'V2'],
     tds: ['salinitas', 'salinity', 'ppt', 'tds', 'ppm', 'total_dissolved_solids', 'v3', 'V3'],
   }
 

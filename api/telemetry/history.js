@@ -26,7 +26,10 @@ export default async function handler(req, res) {
   const pinMap = {
     temperature: 'v0',
     ph: 'v1',
+    oksigen: 'v1',
+    do: 'v1',
     turbidity: 'v2',
+    amonia: 'v2',
     tds: 'v3',
   }
   const pin = pinMap[parameter] || 'v0'
@@ -60,10 +63,10 @@ export default async function handler(req, res) {
     ? numVal
     : parameter === 'temperature'
       ? 25.0
-      : parameter === 'ph'
-        ? 7.2
-        : parameter === 'turbidity'
-          ? 4.5
+      : parameter === 'ph' || parameter === 'oksigen' || parameter === 'do'
+        ? 5.8
+        : parameter === 'turbidity' || parameter === 'amonia'
+          ? 0.05
           : 24.5
 
   const points = []
@@ -72,8 +75,9 @@ export default async function handler(req, res) {
   for (let i = count - 1; i >= 0; i--) {
     const ts = new Date(now - i * stepMs).toISOString()
     const variance = Math.sin((i / count) * Math.PI * 2) * (baseValue * 0.04)
+    const decimals = parameter === 'turbidity' || parameter === 'amonia' ? 2 : 1
     const val = Number(
-      (baseValue + (i === 0 && Number.isFinite(numVal) ? 0 : variance)).toFixed(1),
+      (baseValue + (i === 0 && Number.isFinite(numVal) ? 0 : variance)).toFixed(decimals),
     )
 
     points.push({

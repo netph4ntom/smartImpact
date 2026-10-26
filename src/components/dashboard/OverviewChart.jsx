@@ -31,8 +31,8 @@ function CustomChartTooltip({ active, payload, label }) {
                 {entry.value !== null && entry.value !== undefined ? entry.value : '--'}{' '}
                 {entry.name.includes('Suhu')
                   ? '°C'
-                  : entry.name.includes('Turbidity')
-                    ? 'NTU'
+                  : entry.name.includes('Oksigen') || entry.name.includes('pH') || entry.name.includes('Amonia') || entry.name.includes('Turbidity')
+                    ? 'mg/L'
                     : entry.name.includes('Salinitas') || entry.name.includes('TDS')
                       ? 'ppt'
                       : ''}
@@ -150,11 +150,11 @@ export default function OverviewChart({ history = [] }) {
               isAnimationActive={false}
             />
 
-            {/* pH */}
+            {/* Oksigen Terlarut */}
             <Line
               type="monotone"
               dataKey="ph"
-              name="pH"
+              name="Oksigen (mg/L)"
               stroke="#0F766E"
               strokeWidth={2}
               dot={false}
@@ -162,11 +162,11 @@ export default function OverviewChart({ history = [] }) {
               isAnimationActive={false}
             />
 
-            {/* Turbidity */}
+            {/* Amonia */}
             <Line
               type="monotone"
               dataKey="turbidity"
-              name="Turbidity (NTU)"
+              name="Amonia (mg/L)"
               stroke="#F59E0B"
               strokeWidth={2}
               dot={false}
